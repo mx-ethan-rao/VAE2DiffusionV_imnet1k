@@ -12,4 +12,4 @@ accelerate launch --multi_gpu main.py \
 python attack.py --data_root /data/mingxing/IMNET100K/ --out_dir /home/ethanrao/MIA_LDM/ldm4imagenet/runs/ldm_imnet256 --amp
 
 python attack.py --data_root /data/mingxing/IMNET100K/ --out_dir /home/ethanrao/MIA_LDM/ldm4imagenet/runs/ldm_imnet256
-python attack_by_group1.py --data_root /data/mingxing/IMNET100K/ --out_dir /home/ethanrao/MIA_LDM/ldm4imagenet/runs/ldm_imnet256 --pullback_npz /home/ethanrao/MIA_LDM/ldm4imagenet/runs/ldm_imnet256/imnetv1_3k_pullback.npz
+python attack_by_group_advance.py --data_root /data/mingxing/IMNET100K/ --out_dir /home/ethanrao/MIA_LDM/ldm4imagenet/runs/ldm_imnet256 --pullback_npz /home/ethanrao/MIA_LDM/ldm4imagenet/runs/ldm_imnet256/imnetv1_3k_pullback.npz
