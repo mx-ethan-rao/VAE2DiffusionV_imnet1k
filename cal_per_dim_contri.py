@@ -190,7 +190,7 @@ def main():
     # Kept for compatibility (not used in per-dim mode)
     ap.add_argument("--amp", action="store_true")
     # New estimator controls:
-    ap.add_argument("--n_mc", type=int, default=64, help="MC probes for Hutchinson diag(J^T J)")
+    ap.add_argument("--n_mc", type=int, default=8, help="MC probes for Hutchinson diag(J^T J)")
     ap.add_argument("--eps", type=float, default=1e-12, help="stability epsilon inside log")
     args = ap.parse_args()
 
