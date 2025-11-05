@@ -29,7 +29,7 @@ python cal_per_dim_contri.py \
   --out_npz /home/ethanrao/MIA_LDM/ldm4imagenet/runs/ldm_imnet256/imnetv1_10k_per_dim.npz
 
 python attack_per_dim.py \
-  --data_root /data/mingxing/IMNET100K/ \
+  --data_root /data/mingxing/IMNET100K/data \
   --out_dir /home/ethanrao/MIA_LDM/ldm4imagenet/runs/ldm_imnet256 \
   --pullback_npz /home/ethanrao/MIA_LDM/ldm4imagenet/runs/ldm_imnet256/imnetv1_10k_pullback.npz \
   --perdim_npz /home/ethanrao/MIA_LDM/ldm4imagenet/runs/ldm_imnet256/imnetv1_10k_per_dim.npz
