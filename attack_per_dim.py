@@ -179,6 +179,7 @@ def probe_unet_streaming_masked(
     SCALE: float = 0.18215,
     vae_dtype=torch.float32,
     model_dtype=torch.float32,
+    random_drop= False
 ):
     """
     Same as probe_unet_streaming, but uses per-sample binary masks that
@@ -204,13 +205,21 @@ def probe_unet_streaming_masked(
             cursor += B
 
             # build binary mask dropping the lowest dp% per row
-            if dp > 0.0:
-                # percentile per row -> threshold shape (B, 1)
-                thr = np.percentile(contrib_batch, dp, axis=1, keepdims=True)
-                mask_np = (contrib_batch > thr).astype(np.float32)  # keep=1, drop=0
-                # mask_np = contrib_batch - contrib_batch.min(axis=1, keepdims=True)
-            else:
+            if random_drop:
+                # --- random baseline: random drop same percentage ---
                 mask_np = np.ones_like(contrib_batch, dtype=np.float32)
+                num_drop = int(mask_np.shape[1] * drop_percent / 100.0)
+                for i in range(mask_np.shape[0]):
+                    drop_idx = np.random.choice(mask_np.shape[1], num_drop, replace=False)
+                    mask_np[i, drop_idx] = 0.0
+            else:
+                if dp > 0.0:
+                    # percentile per row -> threshold shape (B, 1)
+                    thr = np.percentile(contrib_batch, dp, axis=1, keepdims=True)
+                    mask_np = (contrib_batch > thr).astype(np.float32)  # keep=1, drop=0
+                    # mask_np = contrib_batch - contrib_batch.min(axis=1, keepdims=True)
+                else:
+                    mask_np = np.ones_like(contrib_batch, dtype=np.float32)
 
             # to torch on device/dtype
             mask = torch.from_numpy(mask_np).to(device=device, dtype=model_dtype)  # (B, D)
@@ -351,18 +360,18 @@ def build_groups_from_npz(npz_path: str, grouping: str, seed: int = 2025, n_rand
             h_groups = [h_idx[h_mv <= thr], h_idx[h_mv > thr]]
             print(f"[threshold] median={thr:.6f}")
         elif grouping == 'quartiles':
-            q1, med, q3 = np.percentile(union, [10, 50, 90])
+            q1, med, q3 = np.percentile(union, [25, 50, 75])
             names = ['q1','q2','q3','q4']
             m_groups = [
                 m_idx[m_mv <= q1],
-                # m_idx[(m_mv > q1) & (m_mv <= med)],
-                # m_idx[(m_mv > med) & (m_mv <= q3)],
+                m_idx[(m_mv > q1) & (m_mv <= med)],
+                m_idx[(m_mv > med) & (m_mv <= q3)],
                 m_idx[m_mv > q3],
             ]
             h_groups = [
                 h_idx[h_mv <= q1],
-                # h_idx[(h_mv > q1) & (h_mv <= med)],
-                # h_idx[(h_mv > med) & (h_mv <= q3)],
+                h_idx[(h_mv > q1) & (h_mv <= med)],
+                h_idx[(h_mv > med) & (h_mv <= q3)],
                 h_idx[h_mv > q3],
             ]
             print(f"[thresholds] q1={q1:.6f}  med={med:.6f}  q3={q3:.6f}")
@@ -392,6 +401,8 @@ def main():
     ap.add_argument("--grouping", type=str, choices=['random','median','quartiles'], default='quartiles')
     ap.add_argument("--random_groups", type=int, default=2)
     ap.add_argument("--drop_percent", type=float, default=40.0, help="percent of lowest-contrib dims to drop per sample")
+    ap.add_argument('--random_drop', action='store_true',
+                        help='if set, randomly drop drop_percent%% of dimensions as a baseline')
     ap.add_argument("--ckpt", type=str, default=None, help="explicit unet checkpoint path")
     ap.add_argument("--seed", type=int, default=2025)
     ap.add_argument("--amp", action="store_true")
@@ -486,6 +497,7 @@ def main():
             device=device,
             probe_min_t=args.probe_min_t, probe_max_t=args.probe_max_t, probe_step=args.probe_step,
             SCALE=SCALE, vae_dtype=vae_dtype, model_dtype=model_dtype,
+            random_drop = args.random_drop
         )
 
 if __name__ == "__main__":
