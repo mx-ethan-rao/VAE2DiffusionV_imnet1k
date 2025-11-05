@@ -9,27 +9,27 @@ accelerate launch --multi_gpu main.py   --data_root /data/mingxing/IMNET100K/   
 #   --out_dir runs/ldm_imnet256 \
 #   --amp
 
-# python attack.py --data_root /data/mingxing/IMNET100K/ --out_dir /home/ethanrao/MIA_LDM/ldm4imagenet/runs/ldm_imnet256 --amp
+# python attack.py --data_root /data/mingxing/IMNET100K/ --out_dir /data/mingxing/IMNET100K/runs/ldm_imnet256_10k --amp
 
-# python attack.py --data_root /data/mingxing/IMNET100K/ --out_dir /home/ethanrao/MIA_LDM/ldm4imagenet/runs/ldm_imnet256
+# python attack.py --data_root /data/mingxing/IMNET100K/ --out_dir /data/mingxing/IMNET100K/runs/ldm_imnet256_10k
 
-python cal_pullback.py --data_root /data/mingxing/IMNET100K/ --out_dir /home/ethanrao/MIA_LDM/ldm4imagenet/runs/ldm_imnet256 --out_npz /home/ethanrao/MIA_LDM/ldm4imagenet/runs/ldm_imnet256/imnetv1_10k_pullback.npz
+python cal_pullback.py --data_root /data/mingxing/IMNET100K/ --out_dir /data/mingxing/IMNET100K/runs/ldm_imnet256_10k --out_npz /data/mingxing/IMNET100K/runs/ldm_imnet256_10k/imnetv1_10k_pullback.npz
 
 
 python attack_by_group_advance.py \
   --data_root /data/mingxing/IMNET100K/ \
-  --out_dir /home/ethanrao/MIA_LDM/ldm4imagenet/runs/ldm_imnet256 \
-  --pullback_npz /home/ethanrao/MIA_LDM/ldm4imagenet/runs/ldm_imnet256/imnetv1_10k_pullback.npz
+  --out_dir /data/mingxing/IMNET100K/runs/ldm_imnet256_10k \
+  --pullback_npz /data/mingxing/IMNET100K/runs/ldm_imnet256_10k/imnetv1_10k_pullback.npz
 
 
 python cal_per_dim_contri.py \
   --data_root /data/mingxing/IMNET100K/ \
-  --out_dir /home/ethanrao/MIA_LDM/ldm4imagenet/runs/ldm_imnet256 \
-  --pullback_npz /home/ethanrao/MIA_LDM/ldm4imagenet/runs/ldm_imnet256/imnetv1_10k_pullback.npz \
-  --out_npz /home/ethanrao/MIA_LDM/ldm4imagenet/runs/ldm_imnet256/imnetv1_10k_per_dim.npz
+  --out_dir /data/mingxing/IMNET100K/runs/ldm_imnet256_10k \
+  --pullback_npz /data/mingxing/IMNET100K/runs/ldm_imnet256_10k/imnetv1_10k_pullback.npz \
+  --out_npz /data/mingxing/IMNET100K/runs/ldm_imnet256_10k/imnetv1_10k_per_dim.npz
 
 python attack_per_dim.py \
   --data_root /data/mingxing/IMNET100K/data \
-  --out_dir /home/ethanrao/MIA_LDM/ldm4imagenet/runs/ldm_imnet256 \
-  --pullback_npz /home/ethanrao/MIA_LDM/ldm4imagenet/runs/ldm_imnet256/imnetv1_10k_pullback.npz \
-  --perdim_npz /home/ethanrao/MIA_LDM/ldm4imagenet/runs/ldm_imnet256/imnetv1_10k_per_dim.npz
+  --out_dir /data/mingxing/IMNET100K/runs/ldm_imnet256_10k \
+  --pullback_npz /data/mingxing/IMNET100K/runs/ldm_imnet256_10k/imnetv1_10k_pullback.npz \
+  --perdim_npz /data/mingxing/IMNET100K/runs/ldm_imnet256_10k/imnetv1_10k_per_dim.npz
